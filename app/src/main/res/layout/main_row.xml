@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:orientation="vertical"
+    android:padding="@dimen/sm"
+    android:paddingEnd="@dimen/activity_padding"
+    android:paddingStart="@dimen/activity_padding"
+    android:paddingTop="@dimen/sm">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 마커 -->
+        <TextView
+            android:id="@+id/tvFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/xs"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/favorite_off"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_md" />
+
+        <!-- 번호 -->
+        <TextView
+            android:id="@+id/tvId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/ns"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@null"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_md" />
+
+        <!-- 종목 이름 -->
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="@null"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_md"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/xs"
+        android:orientation="horizontal">
+
+        <!-- 현재가: 텍스트 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/current_price"
+            android:textColor="@color/ink" />
+
+        <!-- 현재가 -->
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/xs"
+            android:text="@null"
+            android:textColor="@color/ink"
+            android:textStyle="bold" />
+
+        <!-- 등락률: 텍스트 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/md"
+            android:text="@string/rate_of_fluctuation"
+            android:textColor="@color/ink" />
+
+        <!-- 등락률 -->
+        <TextView
+            android:id="@+id/tvRof"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/xs"
+            android:text="@null"
+            android:textStyle="bold" />
+
+        <!-- 거래량: 텍스트 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/md"
+            android:text="@string/volume_of_trade"
+            android:textColor="@color/ink" />
+
+        <!-- 거래량 -->
+        <TextView
+            android:id="@+id/tvVot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/xs"
+            android:text="@null"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- 차트 -->
+    <ImageView
+        android:id="@+id/ivChart"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/candle_chart_height"
+        android:layout_marginTop="@dimen/sm"
+        android:adjustViewBounds="true"
+        android:background="@drawable/chart_background"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>
