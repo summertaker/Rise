@@ -1,35 +1,24 @@
 package com.summertaker.rise;
 
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.summertaker.rise.common.Config;
 import com.summertaker.rise.common.DataManager;
 import com.summertaker.rise.data.Item;
 import com.summertaker.rise.util.RecyclerTouchListener;
-import com.summertaker.rise.util.SwipeToDeleteCallback;
 import com.summertaker.rise.util.Util;
 
 import java.util.ArrayList;
@@ -44,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Item> mItems = new ArrayList<>();
     private ArrayList<Item> mItemsAll = new ArrayList<>();
     private MainAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    //private CoordinatorLayout coordinatorLayout;
     private DividerItemDecoration mDividerItemDecoration;
 
     private DataManager mDataManager;
@@ -108,36 +97,18 @@ public class MainActivity extends AppCompatActivity {
 
         mDividerItemDecoration = new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL);
 
-        /*
-        // 스와이프 방법 1) 좌우 스와이프 (ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT)
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                final int position = viewHolder.getAdapterPosition();
-                Item item = mItems.get(position);
-                //mAdapter.removeItem(position);
-
-                if (direction == ItemTouchHelper.LEFT) {
-                    mItems.remove(viewHolder.getLayoutPosition());
-                    //mAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
-                    //mAdapter.restoreItem(item, position);
-                    //mRecyclerView.scrollToPosition(position);
-                    item.setFavorite(true);
-                    mItems.add(viewHolder.getLayoutPosition(), item);
-                    mAdapter.notifyDataSetChanged();
-                } else if (direction == ItemTouchHelper.RIGHT) {
-                    // Show edit dialog
+            public void onRefresh() {
+                if (mFavoriteMode) {
+                    toggleFavorite();
                 }
+                mItemsAll.clear();
+                mItems.clear();
+                loadData();
             }
-        };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
-        */
+        });
 
         loadData();
     }
@@ -214,9 +185,17 @@ public class MainActivity extends AppCompatActivity {
                             || item.getName().contains("KODEX")
                             || item.getName().contains("KOSEF")
                             || item.getName().contains("TIGER")
+                            || item.getName().contains("KBSTAR")
+                            || item.getName().contains("HANARO")
                             || item.getName().contains("1호")
                             || item.getName().contains("2호")
                             || item.getName().contains("3호")
+                            || item.getName().contains("4호")
+                            || item.getName().contains("5호")
+                            || item.getName().contains("6호")
+                            || item.getName().contains("7호")
+                            || item.getName().contains("8호")
+                            || item.getName().contains("9호")
                             || item.getName().contains("레버리지")
                             || item.getName().contains("배당주")
                             || item.getName().contains("인버스")
@@ -272,11 +251,13 @@ public class MainActivity extends AppCompatActivity {
         //enableSwipeToDeleteAndUndo();
 
         setTitle();
+
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void toggleChart() {
         mYearChartMode = !mYearChartMode;
-        int icon = mYearChartMode ? R.drawable.baseline_insert_chart_white_24 : R.drawable.baseline_insert_chart_outlined_white_24;
+        int icon = mYearChartMode ? R.drawable.baseline_insert_chart_white_24 : R.drawable.baseline_bar_chart_white_24;
         mMenuItemChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), icon));
 
         // d:일, w:주, m:월
@@ -320,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
             mAdapter.notifyDataSetChanged();
         }
         mDataManager.writeFavorites(mItems);
+        goTop();
     }
 
     public void goTop() {
@@ -335,32 +317,5 @@ public class MainActivity extends AppCompatActivity {
             String title = mTitle + " (" + Config.NUMBER_FORMAT.format(mItems.size()) + ")";
             actionBar.setTitle(title);
         }
-    }
-
-
-    private void enableSwipeToDeleteAndUndo() {
-        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                final int position = viewHolder.getAdapterPosition();
-                //final String item = mAdapter.getData().get(position);
-                final Item item = mItems.get(position);
-                mAdapter.removeItem(position);
-
-                //Snackbar snackbar = Snackbar.make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
-                //snackbar.setAction("UNDO", new View.OnClickListener() {
-                //    @Override
-                //    public void onClick(View view) {
-                        //mAdapter.restoreItem(item, position);
-                        //mRecyclerView.scrollToPosition(position);
-                //    }
-                //});
-                //snackbar.setActionTextColor(Color.YELLOW);
-                //snackbar.show();
-            }
-        };
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
-        itemTouchhelper.attachToRecyclerView(mRecyclerView);
     }
 }
