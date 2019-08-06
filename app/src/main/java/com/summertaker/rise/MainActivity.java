@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String mTitle;
 
-    protected MenuItem mMenuItemChart;
+    protected MenuItem mMenuItemYearChart;
+    protected MenuItem mMenuItemTodayChart;
     protected MenuItem mMenuItemFavorite;
 
     private ArrayList<Item> mItems = new ArrayList<>();
@@ -38,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private DividerItemDecoration mDividerItemDecoration;
 
     private DataManager mDataManager;
+
     private boolean mYearChartMode = false;
+    private boolean mTodayChartMode = false;
     private boolean mFavoriteMode = false;
 
     @Override
@@ -116,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        mMenuItemChart = menu.findItem(R.id.action_chart);
+        mMenuItemYearChart = menu.findItem(R.id.action_year_chart);
+        mMenuItemTodayChart = menu.findItem(R.id.action_today_chart);
         mMenuItemFavorite = menu.findItem(R.id.action_favorite);
         return true;
     }
@@ -124,8 +128,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_chart) {
-            toggleChart();
+        if (id == R.id.action_year_chart) {
+            toggleYearChart();
+            return true;
+        } else if (id == R.id.action_today_chart) {
+            toggleTodayChart();
             return true;
         } else if (id == R.id.action_favorite) {
             toggleFavorite();
@@ -255,13 +262,40 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    private void toggleChart() {
+    private void toggleYearChart() {
         mYearChartMode = !mYearChartMode;
-        int icon = mYearChartMode ? R.drawable.baseline_insert_chart_white_24 : R.drawable.baseline_bar_chart_white_24;
-        mMenuItemChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), icon));
+        int icon = mYearChartMode ? R.drawable.baseline_bar_chart_white_24 : R.drawable.baseline_trending_up_white_24;
+        mMenuItemYearChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), icon));
+
+        mTodayChartMode = false;
+        mMenuItemTodayChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.baseline_terrain_white_24));
 
         // d:일, w:주, m:월
-        String url = mYearChartMode ? "https://fn-chart.dunamu.com/images/kr/candle/m/A" : "https://fn-chart.dunamu.com/images/kr/candle/d/A";
+        String url = "https://fn-chart.dunamu.com/images/kr/candle/d/A";
+        if (mYearChartMode) {
+            url = "https://fn-chart.dunamu.com/images/kr/candle/m/A";
+        }
+        long millis = System.currentTimeMillis();
+        for (Item item : mItems) {
+            String chartUrl = url + item.getCode() + ".png?" + millis;
+            item.setChartUrl(chartUrl);
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void toggleTodayChart() {
+        mTodayChartMode = !mTodayChartMode;
+        int icon = mTodayChartMode ? R.drawable.baseline_bar_chart_white_24 : R.drawable.baseline_terrain_white_24;
+        mMenuItemTodayChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), icon));
+
+        mYearChartMode = false;
+        mMenuItemYearChart.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.baseline_trending_up_white_24));
+
+        // d:일, w:주, m:월
+        String url = "https://fn-chart.dunamu.com/images/kr/candle/d/A";
+        if (mTodayChartMode) {
+            url = "https://t1.daumcdn.net/finance/chart/kr/daumstock/d/A";
+        }
         long millis = System.currentTimeMillis();
         for (Item item : mItems) {
             String chartUrl = url + item.getCode() + ".png?" + millis;

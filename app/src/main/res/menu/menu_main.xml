@@ -4,10 +4,17 @@
     tools:context="com.summertaker.rise.MainActivity">
 
     <item
-        android:id="@+id/action_chart"
-        android:icon="@drawable/baseline_bar_chart_white_24"
+        android:id="@+id/action_year_chart"
+        android:icon="@drawable/baseline_trending_up_white_24"
         android:orderInCategory="100"
-        android:title="@string/action_chart"
+        android:title="@string/action_year_chart"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_today_chart"
+        android:icon="@drawable/baseline_terrain_white_24"
+        android:orderInCategory="100"
+        android:title="@string/action_today_chart"
         app:showAsAction="always" />
 
     <item

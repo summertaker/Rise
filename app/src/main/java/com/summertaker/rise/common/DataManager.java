@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,19 +68,8 @@ public class DataManager {
         mItems.clear();
         mUrls.clear();
 
-        if (siteId.equals(Config.KEY_FLUCTUATION_RISE)) { // 상승
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_RISE_LIST_KOSPI);
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_RISE_LIST_KOSDAQ);
-        } else if (siteId.equals(Config.KEY_FLUCTUATION_JUMP)) { // 급등
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_JUMP_LIST_KOSPI);
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_JUMP_LIST_KOSDAQ);
-        } else if (siteId.equals(Config.KEY_FLUCTUATION_FALL)) { // 하락
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_FALL_LIST_KOSPI);
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_FALL_LIST_KOSDAQ);
-        } else if (siteId.equals(Config.KEY_FLUCTUATION_CRASH)) { // 급락
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_CRASH_LIST_KOSPI);
-            mUrls.add(Config.URL_NAVER_FLUCTUATION_CRASH_LIST_KOSDAQ);
-        }
+        mUrls.add(Config.URL_NAVER_FLUCTUATION_RISE_LIST_KOSPI);
+        mUrls.add(Config.URL_NAVER_FLUCTUATION_RISE_LIST_KOSDAQ);
 
         if (mUrls.size() > 0) {
             mUrlLoadCount = 0;
@@ -118,35 +108,38 @@ public class DataManager {
             requestFluctuation();
         } else {
             //Log.e(TAG, "Fluc: mItems.size() = " + mItems.size());
-
-            // 등락률 정렬
-            if (mSiteId.equals(Config.KEY_FLUCTUATION_RISE) || mSiteId.equals(Config.KEY_FLUCTUATION_JUMP)) { // 상승, 급등
-                Collections.sort(mItems, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item a, Item b) {
-                        if (a.getRof() < b.getRof()) {
-                            return 1;
-                        } else if (a.getRof() > b.getRof()) {
-                            return -1;
+            if (mItems.size() > 0) {
+                // 정렬
+                if (mSiteId.equals(Config.KEY_FLUCTUATION_RISE)) { // 상승
+                    Collections.sort(mItems, new Comparator<Item>() {
+                        @Override
+                        public int compare(Item a, Item b) {
+                            if (a.getRof() < b.getRof()) {
+                                return 1;
+                            } else if (a.getRof() > b.getRof()) {
+                                return -1;
+                            }
+                            return 0;
                         }
-                        return 0;
-                    }
-                });
-            } else if (mSiteId.equals(Config.KEY_FLUCTUATION_FALL) || mSiteId.equals(Config.KEY_FLUCTUATION_CRASH)) { // 하락, 급락
-                Collections.sort(mItems, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item a, Item b) {
-                        if (a.getRof() < b.getRof()) {
-                            return -1;
-                        } else if (a.getRof() > b.getRof()) {
-                            return 1;
+                    });
+                } else if (mSiteId.equals(Config.KEY_FLUCTUATION_FALL)) { // 하락
+                    Collections.sort(mItems, new Comparator<Item>() {
+                        @Override
+                        public int compare(Item a, Item b) {
+                            if (a.getRof() < b.getRof()) {
+                                return -1;
+                            } else if (a.getRof() > b.getRof()) {
+                                return 1;
+                            }
+                            return 0;
                         }
-                        return 0;
-                    }
-                });
+                    });
+                }
+                writeCacheItems(mItems);
+            } else {
+                mItems = readCacheItems();
             }
-
-            //writeCacheItems(mSiteId, mItems);
+            //Util.writeFile(mContext, Config.PREFERENCE_TAGS, json.toString());
             mFluctuationCallback.onLoad(mItems);
         }
     }
@@ -159,6 +152,54 @@ public class DataManager {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(key, value);
         editor.apply();
+    }
+
+    public ArrayList<Item> readCacheItems() {
+        ArrayList<Item> items = new ArrayList<>();
+        String data = readPreferences(Config.PREFERENCE_RISE);
+        if (!data.isEmpty()) {
+            try {
+                JSONObject jsonObject = new JSONObject(data);
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    Item item = new Item();
+                    item.setCode(Util.getString(obj, "code")); // 종목 코드
+                    item.setName(Util.getString(obj, "name")); // 종목 이름
+                    item.setPrice(Util.getInt(obj, "price"));  // 현재가
+                    item.setPof(Util.getInt(obj, "pof"));      // 전일비
+                    item.setRof(BigDecimal.valueOf(Util.getDouble(obj, "rof")).floatValue()); // 등락률
+                    item.setVot(Util.getInt(obj, "vot"));       // 거래량
+                    //Log.e(TAG, "- Favorite loaded: " + item.getCode());
+                    items.add(item);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return items;
+    }
+
+    public void writeCacheItems(ArrayList<Item> items) {
+        try {
+            JSONObject json = new JSONObject();
+            JSONArray array = new JSONArray();
+            for (Item item : items) {
+                JSONObject obj = new JSONObject();
+                obj.put("code", item.getCode());   // 코드
+                obj.put("name", item.getName());   // 이름
+                obj.put("price", item.getPrice()); // 현재가
+                obj.put("pof", item.getPof());     // 전일비
+                obj.put("rof", item.getRof());     // 등락률
+                obj.put("vot", item.getVot());     // 거래량
+                //Log.e(TAG, "- Favorite added: " + item.getCode());
+                array.put(obj);
+            }
+            json.put("data", array);
+            writePreferences(Config.PREFERENCE_RISE, json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<Item> readFavorites() {

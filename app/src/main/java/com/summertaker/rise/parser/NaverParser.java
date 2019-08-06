@@ -1,7 +1,5 @@
 package com.summertaker.rise.parser;
 
-import android.util.Log;
-
 import com.summertaker.rise.common.BaseParser;
 import com.summertaker.rise.data.Item;
 

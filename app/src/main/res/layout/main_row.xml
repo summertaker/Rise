@@ -8,9 +8,9 @@
     android:focusableInTouchMode="false"
     android:orientation="vertical"
     android:padding="@dimen/sm"
-    android:paddingEnd="@dimen/activity_padding"
     android:paddingStart="@dimen/activity_padding"
-    android:paddingTop="@dimen/sm">
+    android:paddingTop="@dimen/sm"
+    android:paddingEnd="@dimen/activity_padding">
 
     <LinearLayout
         android:layout_width="match_parent"

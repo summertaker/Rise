@@ -51,10 +51,6 @@ public class BaseApplication extends Application {
         return mInstance;
     }
 
-    public static String getDataPath() {
-        return DATA_PATH;
-    }
-
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -79,12 +75,12 @@ public class BaseApplication extends Application {
         }
     }
 
-    public ArrayList<Item> getFavoriteItems() {
-        return mFavoriteItems;
+    public static String getDataPath() {
+        return DATA_PATH;
     }
 
-    public void setFavoriteItems(ArrayList<Item> favoriteItems) {
-        this.mFavoriteItems = favoriteItems;
+    public static void setDataPath(String dataPath) {
+        DATA_PATH = dataPath;
     }
 
     // 현재가

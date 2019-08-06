@@ -2,12 +2,13 @@
     <string name="sharp">#</string>
 
     <string name="action_add">추가</string>
+    <string name="action_year_chart">연도 차트</string>
+    <string name="action_today_chart">오늘 차트</string>
     <string name="action_clear">삭제</string>
     <string name="access_denied">접근이 거부되었습니다.</string>
     <string name="action_favorite">관심</string>
     <string name="action_finish">종료</string>
     <string name="action_kakao_stock">카카오 스탁</string>
-    <string name="action_chart">차트</string>
     <string name="action_calendar">달력</string>
     <string name="action_possession">보유</string>
     <string name="action_refresh">새로 고침</string>
