@@ -186,30 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 String chartPrefix = "https://fn-chart.dunamu.com/images/kr/candle/d/"; // d:일, w:주, m:월
                 String chartSuffix = ".png?" + millis;
                 for (Item item : items) {
-                    if (item.getName().contains("ETN")
-                            || item.getName().contains("ARIRANG")
-                            || item.getName().contains("KINDEX")
-                            || item.getName().contains("KODEX")
-                            || item.getName().contains("KOSEF")
-                            || item.getName().contains("TIGER")
-                            || item.getName().contains("KBSTAR")
-                            || item.getName().contains("HANARO")
-                            || item.getName().contains("1호")
-                            || item.getName().contains("2호")
-                            || item.getName().contains("3호")
-                            || item.getName().contains("4호")
-                            || item.getName().contains("5호")
-                            || item.getName().contains("6호")
-                            || item.getName().contains("7호")
-                            || item.getName().contains("8호")
-                            || item.getName().contains("9호")
-                            || item.getName().contains("레버리지")
-                            || item.getName().contains("배당주")
-                            || item.getName().contains("인버스")
-                            || item.getName().contains("호스팩")
-                    ) {
-                        continue;
-                    }
                     item.setId(id);
                     for (Item favorite : favorites) {
                         if (favorite.getCode().equals(item.getCode())) {

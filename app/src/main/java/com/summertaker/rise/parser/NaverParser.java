@@ -46,9 +46,35 @@ public class NaverParser extends BaseParser {
                 String temp;
 
                 Elements a = tds.get(1).getElementsByTag("a");
+                name = a.text();
+                if (name.contains("ETN")
+                        || name.contains("ARIRANG")
+                        || name.contains("KINDEX")
+                        || name.contains("KODEX")
+                        || name.contains("KOSEF")
+                        || name.contains("TIGER")
+                        || name.contains("KBSTAR")
+                        || name.contains("HANARO")
+                        || name.contains("1호")
+                        || name.contains("2호")
+                        || name.contains("3호")
+                        || name.contains("4호")
+                        || name.contains("5호")
+                        || name.contains("6호")
+                        || name.contains("7호")
+                        || name.contains("8호")
+                        || name.contains("9호")
+                        || name.contains("국고채")
+                        || name.contains("레버리지")
+                        || name.contains("배당주")
+                        || name.contains("인버스")
+                        || name.contains("호스팩")
+                ) {
+                    continue;
+                }
+
                 String href = a.attr("href");
                 code = getCodeFromUrl(href);
-                name = a.text();
 
                 temp = tds.get(2).text();
                 temp = temp.replace(",", "");
